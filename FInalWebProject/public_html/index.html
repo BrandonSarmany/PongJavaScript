@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!--
+This is a pong game made for Semester Two Web Programming
+This was made by Brandon Sarmany
+This code was made on April 16th, 2018
+-->
+<html>
+    <head>
+        <title>Pong Game</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+        <style>
+            #counter{
+                font-size: 30px;
+                padding-left: 829px;
+            }
+            #counter2{
+                font-size: 30px;
+                padding-left: 600px;    
+            }
+            #controls1{
+                font-size: 20px;
+                padding-left: 840px;
+            }
+            #controls2{
+                font-size: 20px;
+                padding-left: 80px;
+            }
+            #text{
+                font-size: 35px;
+                padding-left: 710px;
+            }
+            #text2{
+                font-size: 35px;
+                padding-left: 380px;
+            }
+            canvas {
+                border: solid .1em white;
+                padding-left: ;
+                padding-right: 0;
+                padding-top: 0 px;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+            }
+           
+            html{
+                background-color: grey;
+            }
+            div p{
+                position: absolute;
+                text-align: center;
+                font-size: 45px;
+            }
+            p{
+                text-align: center;
+                font-size: 20px;  
+            }
+            span{
+                position:relative;
+                text-allign: center;
+            }
+        </style>
+        <script>
+            window.addEventListener("load", function (event) {
+                var c = document.getElementById("myCanvas");
+                var ctx = c.getContext("2d");
+                var p1Up, p1Down, p2Up, p2Down;
+                var height = 650;
+                var width = 1000;
+                var x = 505;
+                var y = height / 2;
+                var rad = 15;
+                var dx = 2.4;
+                var dy = 2.5;
+                var p1X = 10;
+                var p1Y = height / 2 - 75;
+                var p2X = width - 30;
+                var p2Y = height / 2 - 75;
+                var paddleSpeed = 6;
+                var count = 0;
+                var count2 = 0;
+                var paddleH = 150;
+
+
+                // refreshes the game every 16 miliseconds
+                if (typeof game_loop != "undefined")
+                    clearInterval(game_loop);
+                game_loop = setInterval(main, 16);
+                // Main function loads the intial functions for the game
+                // it draws the stage, bothe players, and allows the users to move their players
+                function main() {
+                    stage();
+                    drawPlayer();
+                    drawPlayer2();
+                    movePlayer();
+                }
+                
+                // keydown listener check if the key is pressed down and will change the boolean variables to move the player 
+                window.addEventListener("keydown", function (evt) {
+                    var key = evt.keyCode;
+
+                    if (key == 83) {
+                        p1Up = true;
+                    } else
+                    if (key == 87) {
+                        p1Down = true;
+                    }
+                    if (key == 38) {
+                        p2Up = true;
+                    }
+                    if (key == 40 && p2Y < 650 - 200) {
+                        p2Down = true
+                    }
+                }, false);
+                
+                // keyup listener check if the key is pressed down and will change the boolean variables to stop moving the player 
+                window.addEventListener("keyup", function (evt) {
+                    var key = evt.keyCode;
+                    
+                    if (key == 83) {
+                        p1Up = false
+                    } else
+                    if (key == 87) {
+                        p1Down = false;
+                    }
+                    if (key == 38) {
+                        p2Up = false;
+                    }
+                    if (key == 40) {
+                        p2Down = false;
+                    }
+                }, false);
+                
+                
+                // move player checks the position of the paddle and will change the speed of the player    
+                function movePlayer() {
+                    if (p1Up && p1Y < 650 - paddleH) {
+                        p1Y = p1Y + paddleSpeed;
+                    }
+                    if (p1Down && p1Y > 0) {
+                        p1Y = p1Y - paddleSpeed;
+                    }
+                    if (p2Up && p2Y > 0) {
+                        p2Y = p2Y - paddleSpeed;
+                    }
+                    if (p2Down && p2Y < 650 - paddleH) {
+                        p2Y = p2Y + paddleSpeed;
+                    }
+                }
+                
+                //creates the stage
+                function stage() {
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(0, 0, 1000, 650);
+                    ctx.clearRect(width / 2, 0, 2, height);
+                }
+                
+                //creates player one 
+                function drawPlayer() {
+                    ctx.fillStyle = "purple";
+                    ctx.fillRect(p1X, p1Y, 20, paddleH);
+                }
+
+                //creates player two
+                function drawPlayer2() {
+                    ctx.fillStyle = "purple";
+                    ctx.fillRect(p2X, p2Y, 20, paddleH);
+                }
+                
+                //draws the ball
+                function drawBall() {
+                    ctx.strokeStyle = "red";
+                    ctx.fillStyle = "red";
+                    ctx.beginPath();
+                    ctx.arc(x, y, 15, rad, Math.PI * 2, true);
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.fill();
+                }
+
+                //moveball uses animation to move the ball around the canvas
+                //restrictions have been set to bounce the ball off the top and bottom 
+                //adds score to the appopriate player
+                function moveBall() {
+                    requestAnimationFrame(moveBall);
+                    drawBall();
+
+
+                    if (x - rad < 0) {
+                        dx = dx;
+                        x = Math.floor((Math.random() * 600) + 200);
+                        document.getElementById("counter2").innerHTML = count2 += 1; 
+                    }
+
+                    if (x + rad > width) {
+                        dx = dx;
+                        x = Math.floor((Math.random() * 600) + 200);
+                        document.getElementById("counter").innerHTML = count += 1;
+                    }
+
+                    if (y + rad >= height || y - rad < 0) {
+                        dy = -dy;
+                    }
+
+                    y += dy;
+                    x += dx;
+
+                    hitBox();
+
+                }
+                
+                //checks the position of the ball to the position of the players to bounce the ball of the players if contact is made
+                function hitBox() {
+                    if (x - rad < p1X + 20 / 2 + rad / 2 && y - rad < p1Y + paddleH - 10 && y + rad > p1Y - 10) {
+                        dx = -dx;
+                    }
+
+                    if (x - rad > p2X - 20 - rad + rad / 2 && y - rad < p2Y + paddleH - 10 && y + rad > p2Y - 20) {
+                        dx = -dx;
+                    }
+                    y += dy;
+                    x += dx;
+                }
+                
+                movePlayer();
+                moveBall();
+                main();
+               
+            });
+        </script>
+    </head>
+
+    <body>
+        <div>
+            <p>Pong Game</p>
+        </div>
+    
+        <div> 
+            <span id="text">Player One Score</span><span id="text2">Player Two Score</span>
+        </div>
+        <div> 
+            <span id="counter">0</span><span id="counter2">0</span>
+        </div>
+        <div>
+        <span id="controls1">Use "W" and "S" to move</span> <span id="controls2">Use "Arrow up" and "Arrow Down" to move</span>
+        </div>
+        <canvas id ="myCanvas" height="650" width="1000"></canvas>
+
+
+    </body>
+</html>
